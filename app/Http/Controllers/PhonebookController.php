@@ -52,6 +52,10 @@ class PhonebookController extends Controller
         $pb->save();
     }
 
+    public function getData(){
+       return Phonebook::orderBy('name','DESC')->get();
+    }
+
     /**
      * Display the specified resource.
      *
