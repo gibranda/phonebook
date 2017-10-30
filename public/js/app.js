@@ -43210,6 +43210,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 var Add = __webpack_require__(45);
 
@@ -43225,7 +43229,8 @@ var Update = __webpack_require__(64);
             showActive: '',
             updateActive: '',
             lists: {},
-            errors: {}
+            errors: {},
+            loading: false
         };
     },
     mounted: function mounted() {
@@ -43254,6 +43259,18 @@ var Update = __webpack_require__(64);
             this.addActive = '';
             this.showActive = '';
             this.updateActive = '';
+        },
+        del: function del(key, id) {
+            var _this2 = this;
+
+            if (confirm("Are you sure?")) {
+                this.loading = !this.loading;
+                axios.delete('/phonebook/' + id).then(function (response) {
+                    _this2.lists.splice(key, 1);_this2.loading = !_this2.loading;
+                }).catch(function (error) {
+                    return _this2.errors = error.response.data.errors;
+                });
+            }
         }
     }
 });
@@ -43377,7 +43394,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             axios.post('/phonebook', this.$data.list).then(function (response) {
-                return _this.close();
+                _this.close();
+                _this.$parent.lists.push(response.data);
             }).catch(function (error) {
                 return _this.errors = error.response.data.errors;
             });
@@ -43744,7 +43762,13 @@ var render = function() {
                 on: { click: _vm.openAdd }
               },
               [_vm._v("\r\n      Add New\r\n    ")]
-            )
+            ),
+            _vm._v(" "),
+            _vm.loading
+              ? _c("span", { staticClass: "is-pulled-right" }, [
+                  _c("i", { staticClass: "fa fa-refresh fa-spin fa-2x fa-fw" })
+                ])
+              : _vm._e()
           ]),
           _vm._v(" "),
           _vm._m(0),
@@ -43755,7 +43779,17 @@ var render = function() {
                 _vm._v("\r\n        " + _vm._s(item.name) + "\r\n    ")
               ]),
               _vm._v(" "),
-              _vm._m(1, true),
+              _c("span", { staticClass: "panel-icon column is-1" }, [
+                _c("i", {
+                  staticClass: "has-text-danger fa fa-trash",
+                  attrs: { "aria-hidden": "true" },
+                  on: {
+                    click: function($event) {
+                      _vm.del(key, item.id)
+                    }
+                  }
+                })
+              ]),
               _vm._v(" "),
               _c("span", { staticClass: "panel-icon column is-1" }, [
                 _c("i", {
@@ -43820,17 +43854,6 @@ var staticRenderFns = [
           _c("i", { staticClass: "fa fa-search" })
         ])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", { staticClass: "panel-icon column is-1" }, [
-      _c("i", {
-        staticClass: "has-text-danger fa fa-trash",
-        attrs: { "aria-hidden": "true" }
-      })
     ])
   }
 ]
